@@ -1,10 +1,8 @@
 import os
 import pymysql
 import datetime
-import environ
-
 from pathlib import Path
-
+import environ
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -13,6 +11,7 @@ env = environ.Env(DEBUG=(bool, True))
 environ.Env.read_env(
     env_file=os.path.join(BASE_DIR, '.env')
 )
+
 
 pymysql.install_as_MySQLdb()
 
@@ -62,8 +61,7 @@ CORS_ALLOW_HEADERS = (
 )
 
 LOCAL_APPS = [
-    'apps.users.apps.UsersConfig',
-    'apps.investments.apps.InvestmentsConfig',
+    # Add local apps
 ]
 
 DJANGO_APPS = [
@@ -161,3 +159,21 @@ USE_TZ = False
 STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGGING = {
+    'disable_existing_loggers': False,
+    'version': 1,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'level': 'DEBUG',
+        },
+    },
+    'loggers': {
+        'django.db.backends': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}
