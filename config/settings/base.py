@@ -1,8 +1,10 @@
 import os
 import pymysql
 import datetime
-from pathlib import Path
 import environ
+
+from pathlib import Path
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -11,7 +13,6 @@ env = environ.Env(DEBUG=(bool, True))
 environ.Env.read_env(
     env_file=os.path.join(BASE_DIR, '.env')
 )
-
 
 pymysql.install_as_MySQLdb()
 
@@ -61,7 +62,8 @@ CORS_ALLOW_HEADERS = (
 )
 
 LOCAL_APPS = [
-    # Add local apps
+    'apps.users.apps.UsersConfig',
+    'apps.investments.apps.InvestmentsConfig',
 ]
 
 DJANGO_APPS = [
