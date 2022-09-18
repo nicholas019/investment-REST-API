@@ -1,8 +1,9 @@
 import collections, pandas
 
 from django.core.management.base import BaseCommand
+from django.db import transaction
 
-from apps.users.models import AccountBasicInfo, UserInfo
+from apps.users.models import AccountBasicInfo, AccountInfo, User
 
 
 class Command(BaseCommand):
@@ -11,6 +12,7 @@ class Command(BaseCommand):
     매일 업데이트되는 데이터를 API에서 사용가능하도록 정제하여 Django의 manage.py의 command를 이용하여 Batch 가능하도록 구현
     명령어 : python manage.py batch_users_data_update
     '''
+    @transaction.atomic
     def handle(self, *args, **options):
         df  = pandas.read_excel('data/account_asset_info_set.xlsx')
         df1 = pandas.read_excel('data/account_basic_info_set.xlsx')
@@ -26,23 +28,26 @@ class Command(BaseCommand):
                 ) for user_info in user_info_list)))
 
         for user in user_info_list1:
-            UserInfo.objects.update_or_create(
-                username       = user["username"],
+            account = AccountInfo.objects.update_or_create(
                 account_number = user["account_number"],
                 account_name   = user["account_name"],
                 stock_firm     = user["stock_firm"]
+            )
+            User.objects.update_or_create(
+                username = user["username"],
+                account_id = account[0].id
                 )
-
+            
         basic_info_list= [{
             "account_number": row["계좌번호"],
             "in_principal"  : row["투자원금"]
             }for i, row in df1.iterrows()]
 
         for basic in basic_info_list:
-            user_info = UserInfo.objects.get(account_number = basic["account_number"])
+            user = User.objects.get(account__account_number = basic["account_number"])
 
             AccountBasicInfo.objects.update_or_create(
-                user_id      = user_info.id,
+                user_id      = user.id,
                 in_principal = int(basic["in_principal"])
             )
 
