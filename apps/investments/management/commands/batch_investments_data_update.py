@@ -2,8 +2,8 @@ import pandas
 
 from django.core.management.base import BaseCommand
 
+from apps.users.models import User
 from apps.investments.models import AssetGroupInfo, UserAssetInfo
-from apps.users.models import UserInfo
 
 
 class Command(BaseCommand):
@@ -37,10 +37,10 @@ class Command(BaseCommand):
             }for i, row in df.iterrows()]
 
         for asset_info in asset_info_list:
-            user_info        = UserInfo.objects.get(account_number = asset_info["account_number"])
+            user             = User.objects.get(account__account_number = asset_info["account_number"])
             asset_group_info = AssetGroupInfo.objects.get(isin = asset_info["asset_group"])
             UserAssetInfo.objects.update_or_create(
-                user_id          = user_info.id,
+                user_id          = user.id,
                 asset_group_id   = asset_group_info.id,
                 current_price = asset_info["current_price"],
                 count         = asset_info["count"] 

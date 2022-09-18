@@ -3,7 +3,7 @@ from django.core.validators import MinValueValidator
 
 
 class UserAssetInfo(models.Model): 
-    user          = models.ForeignKey("users.UserInfo", on_delete=models.CASCADE, verbose_name="고객")
+    user          = models.ForeignKey("users.User", on_delete=models.CASCADE, verbose_name="고객")
     asset_group   = models.ForeignKey("investments.AssetGroupInfo", on_delete=models.CASCADE, verbose_name="자산그룹정보")
     current_price = models.DecimalField(max_digits = 10, decimal_places = 2, verbose_name="현재가")
     count         = models.IntegerField(validators=[MinValueValidator(0)], verbose_name="보유수량")
