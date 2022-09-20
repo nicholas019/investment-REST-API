@@ -1,5 +1,7 @@
 from django.urls import path
 
-urlpatterns = [
+from api.v1.investments.views import InvestmentHomeView
 
+urlpatterns = [
+    path("home/", InvestmentHomeView.as_view()),
 ]
