@@ -4,7 +4,7 @@ from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, Permis
 from django.utils import timezone
 
 class UserManager(BaseUserManager):
-    def create_user(self, uid, username, password=None):
+    def create_user(self, uid, username, password):
         """
         주어진 유저아이디, 유저이름, 비밀번호 등 개인정보로 User 인스턴스 생성
         """
@@ -14,11 +14,10 @@ class UserManager(BaseUserManager):
         user = self.model(
             uid      = uid,
             username = username,
-            password = password
         )
-        # 비밀번호는 test를 위해 hash제외
-        # user.set_password(password)
-        # user.save(using=self._db)
+        
+        user.set_password(password)
+        user.save(using=self._db)
         return user
 
     def create_superuser(self, uid, username, password):
