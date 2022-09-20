@@ -3,6 +3,8 @@ from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, Permis
 
 from django.utils import timezone
 
+from apps.investments.models import AccountInfo
+
 class UserManager(BaseUserManager):
     def create_user(self, uid, username, password):
         """
@@ -39,7 +41,7 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
     uid         = models.CharField(max_length=45, verbose_name="고객아이디", unique=True)
     username    = models.CharField(max_length=45, verbose_name="고객이름")
-    account     = models.OneToOneField("users.AccountInfo", on_delete=models.CASCADE, verbose_name="계좌정보", null=True)
+    account     = models.OneToOneField(AccountInfo, on_delete=models.CASCADE, verbose_name="계좌정보", null=True)
     is_active   = models.BooleanField(verbose_name='Is active', default=True)
     date_joined = models.DateTimeField(verbose_name='가입일자', default=timezone.now)
 
@@ -54,24 +56,4 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = verbose_name
         ordering            = ('-date_joined',)
 
-
-class AccountInfo(models.Model):
-    account_number = models.BigIntegerField(verbose_name="계좌번호")
-    account_name   = models.CharField(max_length=45, verbose_name="계좌명")
-    stock_firm     = models.CharField(max_length=45, verbose_name="증권사")
-
-    class Meta:
-        db_table            = "account_info"
-        verbose_name        = "계좌정보"
-        verbose_name_plural = verbose_name
-
-
-class AccountBasicInfo(models.Model):
-    user         = models.ForeignKey("users.User", on_delete=models.CASCADE, verbose_name="고객")
-    in_principal = models.DecimalField(max_digits = 10, decimal_places = 2, verbose_name="투자원금")
-
-    class Meta:
-        db_table            = "account_basic_info"
-        verbose_name        = "투자정보"
-        verbose_name_plural = verbose_name
 
