@@ -15,7 +15,7 @@ class Command(BaseCommand):
     @transaction.atomic
     def handle(self, *args, **options):
         df  = pandas.read_excel('data/account_asset_info_set.xlsx')
-        df1 = pandas.read_excel('data/account_basic_info_set.xlsx')
+        df1 = pandas.read_excel('data/account_basic_info_set1.xlsx')
 
         user_info_list= [{
             "username"      : row["고객이름"],
@@ -45,10 +45,16 @@ class Command(BaseCommand):
 
         for basic in basic_info_list:
             user = User.objects.get(account__account_number = basic["account_number"])
-
-            AccountBasicInfo.objects.update_or_create(
-                user_id      = user.id,
+            
+            obj, created = AccountBasicInfo.objects.get_or_create(
+                uid          = user.id,
                 in_principal = int(basic["in_principal"])
-            )
+                )
+            if not created:
+                # 새로 변경된 투자원금이 저장되고 이전에 저장되어있던 투자원금 데이터는 삭제
+                result = AccountBasicInfo.objects.filter(user_id = user.id).first()
+                result.delete()
+            else:
+                pass
 
         return "DATE_UPDATE_SUCCESS"
