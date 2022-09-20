@@ -6,12 +6,6 @@ from apps.users.models import AccountInfo, User
 
 
 
-class AccountInfoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AccountInfo
-        fields = "__all__"
-
-
 class UserSignUpSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     class Meta:

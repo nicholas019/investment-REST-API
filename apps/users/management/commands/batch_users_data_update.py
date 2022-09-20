@@ -2,8 +2,9 @@ import collections, pandas
 
 from django.core.management.base import BaseCommand
 from django.db import transaction
+from apps.investments.models import AccountBasicInfo
 
-from apps.users.models import AccountBasicInfo, AccountInfo, User
+from apps.users.models import AccountInfo, User
 
 
 class Command(BaseCommand):
