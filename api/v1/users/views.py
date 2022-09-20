@@ -1,6 +1,7 @@
 from rest_framework import generics
 
 from api.v1.users.serializers import UserSignUpSerializer
+
 from apps.users.models import User
 
 
@@ -11,5 +12,3 @@ class SignUpView(generics.CreateAPIView):
     '''
     queryset = User.objects.all()
     serializer_class = UserSignUpSerializer
-
-
