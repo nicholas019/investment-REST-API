@@ -1,6 +1,7 @@
 from rest_framework import generics
 
-from api.v1.investments.serializers import  UserInvestmentDetailSerializer, UserInvestmentSerializer
+from api.v1.investments.serializers import  HoldingsListSerializer, UserInvestmentDetailSerializer, UserInvestmentSerializer
+from apps.investments.models import UserAssetInfo
 
 from apps.users.models import User
 
@@ -25,3 +26,17 @@ class InvestmentDetailView(InvestmentHomeView):
     고객이름, 계좌명, 증권사, 계좌번호, 계좌 총 자산, 투자 원금, 총 수익금, 수익률 8개 데이터 반환
     '''
     serializer_class = UserInvestmentDetailSerializer
+
+
+class HoldingsView(generics.ListAPIView):    
+    '''
+    보유종목 화면 API 구현
+    고객이름, 보유 종목명, 보유 종목의 자산그룹, 보유 종목의 평가 금액, 보유 종목 ISIN 5개 데이터 반환
+
+    '''
+    serializer_class = HoldingsListSerializer
+
+    def get_queryset(self):
+        user     = self.request.user
+        queryset = UserAssetInfo.objects.filter(user_id = user.id)
+        return queryset
