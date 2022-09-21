@@ -1,8 +1,9 @@
 from rest_framework import serializers
+from rest_framework.validators import ValidationError
 from api.v1.users.serializers import UserSerializer
 
 from apps.users.models import User
-from apps.investments.models import AccountBasicInfo, AccountInfo, AssetGroupInfo, UserAssetInfo
+from apps.investments.models import AccountBasicInfo, AccountInfo, AssetGroupInfo, TradeInfo, UserAssetInfo
 
 
 class AssetGroupSerialzer(serializers.ModelSerializer):
@@ -114,3 +115,45 @@ class HoldingsListSerializer(serializers.ModelSerializer):
         result        = current_price * count
 
         return int(result)
+
+class TradeInfoSerializer(serializers.ModelSerializer):
+    '''
+    입금거래정보 시리얼라이저
+    '''
+    account_number  = serializers.IntegerField(write_only=True)
+    user_name       = serializers.CharField(write_only=True)
+    transfer_amount = serializers.DecimalField(max_digits = 10, decimal_places = 2, write_only=True)
+    class Meta:
+        model = TradeInfo
+        fields = ["id", 'user_name', "transfer_amount", "account_number"]
+
+    def validate(self, validate_data):
+        '''
+        입금거래 정보 유효성검사진행
+        검사1 : 계좌번호 확인
+        검사2 : 계좌번호와 고객이름 매칭 
+        '''
+        try:
+            account_number = validate_data["account_number"]
+            user_name      = validate_data["user_name"]
+
+            account = AccountInfo.objects.get(account_number = account_number)
+
+            if not User.objects.filter(username = user_name, account_id = account.id).exists():
+                raise ValidationError("계좌번호 또는 고객이름을 잘못입력했습니다. 다시한번확인해주세요.")
+
+        except AccountInfo.DoesNotExist:
+                raise ValidationError("계좌가 존재하지 않습니다.")
+
+        return validate_data
+
+    def create(self, validate_data):
+        '''
+        입금 거래정보 저장
+        저장시 조회를 먼저해보고 있으면 에러처리 없을때만 저장하도록 구현
+        '''
+        transfer, created = TradeInfo.objects.get_or_create(**validate_data)
+        if not created:
+            raise ValidationError("이미 저장이 되었습니다.")
+        return transfer
+        
