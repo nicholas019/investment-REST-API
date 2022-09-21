@@ -45,3 +45,14 @@ class AccountBasicInfo(models.Model):
         verbose_name        = "투자정보"
         verbose_name_plural = verbose_name
 
+
+class TradeInfo(models.Model):
+    account_number  = models.BigIntegerField(verbose_name="계좌번호")
+    user_name       = models.CharField(max_length=45, verbose_name="고객명")
+    transfer_amount = models.DecimalField(max_digits = 10, decimal_places = 2, verbose_name="거래금액")
+    created_at      = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table            = "trade_info"
+        verbose_name        = "입금거래정보"
+        verbose_name_plural = verbose_name

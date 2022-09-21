@@ -1,7 +1,7 @@
 from rest_framework import generics
 
-from api.v1.investments.serializers import  HoldingsListSerializer, UserInvestmentDetailSerializer, UserInvestmentSerializer
-from apps.investments.models import UserAssetInfo
+from api.v1.investments.serializers import  HoldingsListSerializer, TradeInfoSerializer, UserInvestmentDetailSerializer, UserInvestmentSerializer
+from apps.investments.models import TradeInfo, UserAssetInfo
 
 from apps.users.models import User
 
@@ -40,3 +40,13 @@ class HoldingsView(generics.ListAPIView):
         user     = self.request.user
         queryset = UserAssetInfo.objects.filter(user_id = user.id)
         return queryset
+
+
+class CreateTradeInfo(generics.CreateAPIView):
+    '''
+    입금거래 정보 저장 API
+    정상적으로 입금시 id 반환
+    '''
+    queryset         = TradeInfo.objects.all()
+    serializer_class = TradeInfoSerializer
+    
