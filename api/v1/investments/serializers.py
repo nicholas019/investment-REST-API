@@ -1,3 +1,5 @@
+import hashlib
+
 from rest_framework import serializers
 from rest_framework.validators import ValidationError
 from api.v1.users.serializers import UserSerializer
@@ -156,4 +158,3 @@ class TradeInfoSerializer(serializers.ModelSerializer):
         if not created:
             raise ValidationError("이미 저장이 되었습니다.")
         return transfer
-        
