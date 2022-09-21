@@ -16,7 +16,7 @@ class Command(BaseCommand):
     @transaction.atomic
     def handle(self, *args, **options):
         df  = pandas.read_excel('data/account_asset_info_set.xlsx')
-        df1 = pandas.read_excel('data/account_basic_info_set1.xlsx')
+        df1 = pandas.read_excel('data/account_basic_info_set.xlsx')
 
         user_info_list= [{
             "username"      : row["고객이름"],
