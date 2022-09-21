@@ -1,7 +1,8 @@
+import hashlib
 from rest_framework import generics
-
-from api.v1.investments.serializers import  HoldingsListSerializer, TradeInfoSerializer, UserInvestmentDetailSerializer, UserInvestmentSerializer
-from apps.investments.models import TradeInfo, UserAssetInfo
+from rest_framework.views import APIView, Response
+from api.v1.investments.serializers import  AccountBasicInfoSerializer, HoldingsListSerializer, TradeInfoSerializer, UserInvestmentDetailSerializer, UserInvestmentSerializer
+from apps.investments.models import AccountBasicInfo, TradeInfo, UserAssetInfo
 
 from apps.users.models import User
 
@@ -49,4 +50,25 @@ class CreateTradeInfo(generics.CreateAPIView):
     '''
     queryset         = TradeInfo.objects.all()
     serializer_class = TradeInfoSerializer
-    
+
+
+class UpdateUserAssetView(APIView):
+    '''
+    계좌번호 + 고객이름 + 투자금액 을 sha512로 만든 해시값과 기존 입금거래정보때의 
+    '''
+    def post(self, request):
+        data= self.request.data
+        id        = data["id"]
+        signature = data["signature"]
+
+        trade_info  = TradeInfo.objects.get(id = id)
+        data        = str(trade_info.account_number) + str(trade_info.user_name) + str(int(trade_info.transfer_amount))
+        hash_data   = hashlib.sha512()
+        hash_data.update(data.encode('utf-8'))
+        hash_result = hash_data.hexdigest()
+        
+        if signature == hash_result:
+            AccountBasicInfo.objects.filter(user_id = id).update(in_principal = trade_info.transfer_amount)
+            trade_info.delete()
+            return Response({"status":'True'})
+        return Response({"status":"False"})
