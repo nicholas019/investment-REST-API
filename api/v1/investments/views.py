@@ -54,7 +54,10 @@ class CreateTradeInfo(generics.CreateAPIView):
 
 class UpdateUserAssetView(APIView):
     '''
-    계좌번호 + 고객이름 + 투자금액 을 sha512로 만든 해시값과 기존 입금거래정보때의 
+    등록한 거래정보 검증 후 실제 고객의 자산 업데이트 API
+    계좌번호 + 고객이름 + 투자금액 을 sha512로 만든 해시값과 기존 입금거래정보 의 계좌번호 + 고객이름 + 투자금액을 
+    sha512로 해시한값과 비교후에 맞다면 투자원금에 투자금액을 더하는 기능 구현
+    투자금액을 더한뒤 기존에 있던 입금거래정보는 삭제
     '''
     def post(self, request):
         data= self.request.data

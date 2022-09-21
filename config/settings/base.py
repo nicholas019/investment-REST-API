@@ -79,6 +79,7 @@ THIRD_PARTY_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
+    'django_crontab',
 ]
 
 INSTALLED_APPS = LOCAL_APPS + DJANGO_APPS + THIRD_PARTY_APPS
@@ -164,3 +165,11 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = "users.User"
+
+# 스캐줄러
+CRONJOBS = [
+    ('1 * * * *', 'django.core.management.call_command', ['batch_users_data_update'],
+    '>> /log/batch_users_data_update.log'),
+    ('1 * * * *', 'django.core.management.call_command', ['batch_investments_data_update'],
+    '>> /log/batch_investments_data_update.log'),
+]
